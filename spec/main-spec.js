@@ -1,4 +1,6 @@
-const main = require('../main/main');
+const printInventory = require('../main/main');
+const balabala = require('../main/datbase.js');
+var loadAllItems = balabala.loadAllItems ;
 
 describe('pos', function () {
     var allItems;
