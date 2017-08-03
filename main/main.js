@@ -31,15 +31,22 @@ module.exports = function main(inputs) {
 		return GoodsBarcodeObject ;
 	}
 
-	function TotalPrice (arrayA ,arrayB){
+	function TotalPrice (arrayA ,arrayB , arrayC){
 		var string1 =  '' ;
 		for ( var GoodsCartInfo of arrayA ){
 			var GoodsCartBarcode  = GoodsCartInfo.barcode ;
 			for  ( var GoodsFormInfo of arrayB ){
 				var GoodsFormBarcode = GoodsFormInfo.barcode ;
-				if ( GoodsCartInfo.barcode === GoodsFormInfo.barcode  ){
-					string1 += '名称：' + GoodsFormInfo.name + '，数量：' + GoodsCartInfo.count + GoodsFormInfo.unit + '，单价：' + GoodsFormInfo.price.toFixed(2) + '(元)，' + '小计' + '：' + ((GoodsCartInfo.count -parseInt(GoodsCartInfo.count / 3) )* GoodsFormInfo.price).toFixed(2) + '(元)\n';
-					sum += (GoodsCartInfo.count - parseInt(GoodsCartInfo.count / 3)) * GoodsFormInfo.price ;
+				if ( GoodsFormBarcode === GoodsCartBarcode  ){
+					string1 += '名称：' + GoodsFormInfo.name + '，数量：' + GoodsCartInfo.count + GoodsFormInfo.unit + '，单价：' + GoodsFormInfo.price.toFixed(2) + '(元)，' + '小计' + '：';
+					if  ( arrayC[0].barcodes.indexOf(GoodsCartInfo.barcode) === -1 ){
+						GoodsTotalCount = GoodsCartInfo.count ;
+					}
+					else{
+						GoodsTotalCount = GoodsCartInfo.count -parseInt(GoodsCartInfo.count / 3) ;
+					}
+						string1 += (GoodsTotalCount * GoodsFormInfo.price).toFixed(2) + '(元)\n';
+					sum += GoodsTotalCount * GoodsFormInfo.price ;
 				}
 			}
 		}
@@ -70,7 +77,7 @@ module.exports = function main(inputs) {
 	}
 
 	var CountedArray = CountGoodsFrequency(inputs);
-	answer += TotalPrice(CountedArray , loadAllItems);
+	answer += TotalPrice(CountedArray , loadAllItems , loadPromotions);
 	answer +=  '----------------------\n挥泪赠送商品：\n' + Discount(CountedArray , loadPromotions , loadAllItems);
 	answer +=  '----------------------\n' + '总计：' + sum.toFixed(2) + '(元)\n' + '节省：' + discount.toFixed(2) +'(元)' + '\n**********************'
 	console.log(answer);
